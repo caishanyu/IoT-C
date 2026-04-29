@@ -20,17 +20,22 @@
 
 #include <stdio.h>
 #include "type/type_list.h"
+#include "type/type_dlist.h"
+#include "plat/atom.h"
 
 /* ========================================================================== */
 /*                             Macro Definitions                              */
 /* ========================================================================== */
 
 pre_declare_list(test_list_s)
+pre_declare_dlist(test)
 typedef struct test_data_s{
     int data_val;
     test_list_s_item_t list_item;
+    test_dlist_item_t dlist_item;
 }test_data_t;
 declare_list(test_list_s, test_list_f, test_data_t, list_item)
+declare_dlist(test, test, test_data_t, dlist_item)
 
 #define TEST_LIST_DATA_COUNT    (5)
 
