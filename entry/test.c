@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include "type/type_list.h"
 #include "type/type_dlist.h"
+#include "type/type_hash.h"
 #include "plat/atom.h"
 
 /* ========================================================================== */
@@ -29,13 +30,21 @@
 
 pre_declare_list(test_list_s)
 pre_declare_dlist(test)
+pre_declare_hash(test)
+
 typedef struct test_data_s{
     int data_val;
     test_list_s_item_t list_item;
     test_dlist_item_t dlist_item;
+    test_hash_item_t hash_item;
 }test_data_t;
+
+static attr_pure_inline int cmp_test(test_data_t *t1, test_data_t *t2)  { return t1->data_val - t2->data_val; }
+static attr_pure_inline int hash_test(test_data_t *t)                   { return t->data_val; }
+
 declare_list(test_list_s, test_list_f, test_data_t, list_item)
 declare_dlist(test, test, test_data_t, dlist_item)
+declare_hash(test, test, test_data_t, hash_item, 3, 10, cmp_test, hash_test)
 
 #define TEST_LIST_DATA_COUNT    (5)
 
