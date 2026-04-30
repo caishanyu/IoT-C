@@ -285,6 +285,70 @@ static attr_pure_inline hash_item_t* type_hash_next(hash_head_t *head, hash_item
  */
 static attr_pure_inline unsigned int type_hash_count(hash_head_t *head);
 
+// JHASH func
+extern attr_pure unsigned int jhash(const void *key, unsigned int length, unsigned int initval);
+extern attr_pure unsigned int jhash2(const unsigned int *k, unsigned int length, unsigned int initval);
+extern attr_const unsigned int jhash_3words(unsigned int a, unsigned int b, unsigned int c, unsigned int initval);
+// type_list encapsulation
+static attr_const_inline unsigned int jhash_2words(unsigned int a, unsigned int b, unsigned int initval);
+static attr_const_inline unsigned int jhash_1word(unsigned int a, unsigned int initval);
+// type_list top encapsulation, for user
+
+/**
+ * @brief       calculate hash val of any type buffer
+ *
+ * @param[in]   key     需要计算哈希值的缓冲区指针
+ * @param[in]   length  缓冲区长度
+ * @param[in]   initval 初始种子值，可以不使用，传0
+ * 
+ * @retval      hash value
+ */
+static attr_pure_inline unsigned int type_hash_jhash(const void *key, unsigned int length, unsigned int initval);
+
+/**
+ * @brief       calculate hash val of u32 array
+ *
+ * @param[in]   key     需要计算哈希值的u32数组指针
+ * @param[in]   length  数组长度
+ * @param[in]   initval 初始种子值，可以不使用，传0
+ * 
+ * @retval      hash value
+ */
+static attr_pure_inline unsigned int type_hash_jhash2(const unsigned int *key, unsigned int length, unsigned int initval);
+
+/**
+ * @brief       calculate hash val of single u32 variable
+ *
+ * @param[in]   a       需要计算哈希值的u32变量
+ * @param[in]   initval 初始种子值，可以不使用，传0
+ * 
+ * @retval      hash value
+ */
+static attr_const_inline unsigned int type_hash_jhash_32bit(unsigned int a, unsigned int initval);
+
+/**
+ * @brief       calculate hash val of two u32 variables
+ *
+ * @param[in]   a           需要计算哈希值的u32变量
+ * @param[in]   b           需要计算哈希值的u32变量
+ * @param[in]   initval     初始种子值，可以不使用，传0
+ * 
+ * @retval      hash value
+ */
+static attr_const_inline unsigned int type_hash_jhash_64bit(unsigned int a, unsigned int b, unsigned int initval);
+
+/**
+ * @brief       calculate hash val of three u32 variables
+ *
+ * @param[in]   a           需要计算哈希值的u32变量
+ * @param[in]   b           需要计算哈希值的u32变量
+ * @param[in]   c           需要计算哈希值的u32变量
+ * @param[in]   initval     初始种子值，可以不使用，传0
+ * 
+ * @retval      hash value
+ */
+static attr_const_inline unsigned int type_hash_jhash_96bit(unsigned int a, unsigned int b, unsigned int c, unsigned int initval);
+
 /* ========================================================================== */
 /*                         Static Function Implementations                    */
 /* ========================================================================== */
@@ -375,6 +439,41 @@ static inline hash_item_t* type_hash_next(hash_head_t *head, hash_item_t *item)
 static inline unsigned int type_hash_count(hash_head_t *head)
 {
     return !head ? 0 : head->count;
+}
+
+static inline unsigned int jhash_1word(unsigned int a, unsigned int initval)
+{
+    return jhash_3words(a, 0, 0, initval);
+}
+
+static attr_const_inline unsigned int jhash_2words(unsigned int a, unsigned int b, unsigned int initval)
+{
+    return jhash_3words(a, b, 0, initval);
+}
+
+static inline unsigned int type_hash_jhash(const void *key, unsigned int length, unsigned int initval)
+{
+    return jhash(key, length, initval);
+}
+
+static inline unsigned int type_hash_jhash2(const unsigned int *key, unsigned int length, unsigned int initval)
+{
+    return jhash2(key, length, initval);
+}
+
+static inline unsigned int type_hash_jhash_32bit(unsigned int a, unsigned int initval)
+{
+    return jhash_1word(a, initval);
+}
+
+static inline unsigned int type_hash_jhash_64bit(unsigned int a, unsigned int b, unsigned int initval)
+{
+    return jhash_2words(a, b, initval);
+}
+
+static inline unsigned int type_hash_jhash_96bit(unsigned int a, unsigned int b, unsigned int c, unsigned int initval)
+{
+    return jhash_3words(a, b, c, initval);
 }
 
 #endif

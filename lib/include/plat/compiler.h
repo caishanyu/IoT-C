@@ -23,8 +23,10 @@
 
 #define attr_unused         __attribute__((unused))                         // 即使不使用，也不会报错
 #define attr_pure           __attribute__((pure))                           // 纯函数：不会修改全局变量、传入指针的内存、无IO操作，返回值仅依赖于函数参数和某些全局/静态变量
+#define attr_const          __attribute__((const))                          // 在Pure的基础上，不会读取任何全局状态或指针内存，优化会更加激进
 #define attr_force_inline   inline __attribute__((unused, always_inline))
 #define attr_pure_inline    inline __attribute__((unused, always_inline, pure))
+#define attr_const_inline   inline __attribute__((unused, always_inline, const))
 
 // 获取type类型member的偏移
 #ifndef offsetof
