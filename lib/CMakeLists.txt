@@ -1,6 +1,7 @@
 add_library(Lib STATIC
     type/type_list.c
     type/type_hash.c
+    type/type_skiplist.c
 )
 
 target_include_directories(Lib PUBLIC
