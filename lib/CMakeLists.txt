@@ -3,6 +3,7 @@ add_library(Lib STATIC
     type/type_hash.c
     type/type_skiplist.c
     type/trie.c
+    type/type_atom_queue.c
 )
 
 target_include_directories(Lib PUBLIC

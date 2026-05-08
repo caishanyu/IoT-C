@@ -3,4 +3,4 @@ add_executable(Entry
     main.c
 )
 
-target_link_libraries(Entry PRIVATE Lib)
+target_link_libraries(Entry PRIVATE Lib pthread)

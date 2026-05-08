@@ -19,12 +19,15 @@
 /* ========================================================================== */
 
 #include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h>
 #include "type/type_list.h"
 #include "type/type_dlist.h"
 #include "type/type_hash.h"
 #include "type/type_skiplist.h"
 #include "plat/atom.h"
 #include "type/trie.h"
+#include "type/type_atom_queue.h"
 
 /* ========================================================================== */
 /*                             Macro Definitions                              */
@@ -34,6 +37,7 @@ pre_declare_list(test)
 pre_declare_dlist(test)
 pre_declare_hash(test)
 pre_declare_skiplist(test)
+pre_declare_spsc_atom_queue(test)
 
 typedef struct test_data_s{
     int data_val;
@@ -41,6 +45,7 @@ typedef struct test_data_s{
     test_dlist_item_t dlist_item;
     test_hash_item_t hash_item;
     test_skiplist_item_t skiplist_item;
+    test_spsc_atom_queue_item_t spsc_aq_item;
 }test_data_t;
 
 static attr_pure_inline int cmp_test(test_data_t *t1, test_data_t *t2)  { return t1->data_val - t2->data_val; }
@@ -50,6 +55,7 @@ declare_list(test, test, test_data_t, list_item)
 declare_dlist(test, test, test_data_t, dlist_item)
 declare_hash(test, test, test_data_t, hash_item, 3, 10, cmp_test, hash_test)
 declare_skiplist(test, test, test_data_t, skiplist_item, cmp_test)
+declare_spsc_atom_queue(test, test, test_data_t, spsc_aq_item)
 
 #define TEST_LIST_DATA_COUNT    (5)
 
@@ -114,11 +120,61 @@ void test_trie()
     assert(!trie_find(trie_head, "hello world test1 ccb"));
 }
 
+static unsigned int sum = 0;
+static test_spsc_atom_queue_head_t spsc_aq = {};
+
+void* test_spsc_producer(void *args)
+{
+    int i = 1;
+
+    while(i <= 100)
+    {
+        test_data_t *data = (test_data_t*)malloc(sizeof(test_data_t));
+        memset(data, 0, sizeof(test_data_t));
+        data->data_val = i;
+        test_spsc_atom_queue_push(&spsc_aq, data);
+        ++ i;
+    }
+}
+
+void* test_spsc_consumer(void *args)
+{
+    int i = 1;
+
+    while(i <= 100)
+    {
+        test_data_t *data = test_spsc_atom_queue_pop(&spsc_aq);
+        if(!data)
+            continue;
+        else
+        {
+            sum += data->data_val;
+            free(data);
+            i ++;
+        }
+    }
+}
+
+void test_spsc_aq()
+{
+    test_spsc_atom_queue_init(&spsc_aq);
+
+    pthread_t producer, consumer;
+    pthread_create(&producer, NULL, test_spsc_producer, NULL);
+    pthread_create(&consumer, NULL, test_spsc_consumer, NULL);
+    pthread_join(producer, NULL);
+    pthread_join(consumer, NULL);
+    printf("sum %u\n", sum);
+    assert(sum == (1+100)*100/2);
+}
+
 void test_all()
 {
     test_type_list();
 
     test_trie();
+
+    test_spsc_aq();
 
     printf("ALL test passed.\n");
 }
