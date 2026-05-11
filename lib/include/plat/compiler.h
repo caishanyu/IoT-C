@@ -27,6 +27,19 @@
 #define attr_force_inline   inline __attribute__((unused, always_inline))
 #define attr_pure_inline    inline __attribute__((unused, always_inline, pure))
 #define attr_const_inline   inline __attribute__((unused, always_inline, const))
+#define attr_ctor(x)        __attribute__((constructor(x)))                 // 指定构造函数，在main函数执行前会自动运行
+#define attr_dtor(x)        __attribute__((destructor(x)))
+#define attr_aligned(n)     __attribute__((aligned(n)))                     // 指定起始地址必须是n的倍数，效果就是按n字节对齐
+
+// 构造、析构优先级，数值越小，优先级越高
+#define CTOR_PRIO_LOW      (101)
+#define CTOR_PRIO_MID      (102)
+#define CTOR_PRIO_HIGH     (103)
+#define DTOR_PRIO_LOW      (101)
+#define DTOR_PRIO_MID      (102)
+#define DTOR_PRIO_HIGH     (103)
+
+#define thread_local        _Thread_local       // 线程本地属性
 
 // 获取type类型member的偏移
 #ifndef offsetof
