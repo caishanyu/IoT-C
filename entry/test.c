@@ -49,7 +49,7 @@ typedef struct test_data_s{
 }test_data_t;
 
 static attr_pure_inline int cmp_test(test_data_t *t1, test_data_t *t2)  { return t1->data_val - t2->data_val; }
-static attr_pure_inline int hash_test(test_data_t *t)                   { return t->data_val; }
+static attr_pure_inline int hash_test(test_data_t *t)                   { return type_hash_jhash_32bit(t->data_val, 0); }
 
 declare_list(test, test, test_data_t, list_item)
 declare_dlist(test, test, test_data_t, dlist_item)
@@ -97,6 +97,60 @@ void test_type_list()
     assert(!test_list_first(&list_head));
 
     printf("type list test passed.\n");
+}
+
+void test_type_hash()
+{
+    test_data_t test_data[20] = {};
+    test_hash_head_t hash = {};
+    test_hash_init(&hash);
+    unsigned int i = 0;
+    for(; i < 20; ++ i)
+        test_data[i].data_val = i;
+    
+    assert(!test_hash_count(&hash));
+
+    for(i = 0; i < 20; ++ i)
+        test_hash_add(&hash, &test_data[i]);
+    
+    assert(20 == test_hash_count(&hash));
+
+    test_data_t *first = test_hash_first(&hash);
+    test_data_t *prev = first, *cur = NULL;
+    if(first)
+        printf("hash: %d, ", first->data_val);
+    while(prev)
+    {
+        cur = test_hash_next(&hash, prev);
+        if(!cur)
+            break;
+        else
+        {
+            printf("%d, ", cur->data_val);
+            prev = cur;
+        }
+    }
+    printf("\n");
+
+    for(i = 0; i < 20; ++i)
+        test_hash_del(&hash, &test_data[i]);
+    assert(0 == test_hash_count(&hash));
+    first = test_hash_first(&hash);
+    prev = first;
+    if(first)
+        printf("hash: %d, ", first->data_val);
+    while(prev)
+    {
+        cur = test_hash_next(&hash, prev);
+        if(!cur)
+            break;
+        else
+        {
+            printf("%d, ", cur->data_val);
+            prev = cur;
+        }
+    }
+    printf("\n");
 }
 
 void test_trie()
@@ -171,6 +225,8 @@ void test_spsc_aq()
 void test_all()
 {
     test_type_list();
+
+    test_type_hash();
 
     test_trie();
 

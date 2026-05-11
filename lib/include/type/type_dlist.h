@@ -51,61 +51,61 @@ typedef struct { dlist_head_t dlist_head; } sprefix ## _dlist_head_t;   \
 /* pre_declare_dlist end */
 
 #define declare_dlist(sprefix, fprefix, type, field)    \
-static attr_force_inline void fprefix ## _init(sprefix ## _dlist_head_t *head)  \
+static attr_force_inline void fprefix ## _dlist_init(sprefix ## _dlist_head_t *head)  \
 { \
     assert(head);   \
     memset(head, 0, sizeof(*head)); \
     type_dlist_init(&head->dlist_head); \
 } \
-static attr_force_inline void fprefix ## _fini(sprefix ## _dlist_head_t *head)  \
+static attr_force_inline void fprefix ## _dlist_fini(sprefix ## _dlist_head_t *head)  \
 { \
     assert(head && !head->dlist_head.count);    \
     memset(head, 0, sizeof(*head)); \
 } \
-static attr_force_inline void fprefix ## _add_head(sprefix ## _dlist_head_t *head, type *item)  \
+static attr_force_inline void fprefix ## _dlist_add_head(sprefix ## _dlist_head_t *head, type *item)  \
 { \
     assert(head && item);   \
     type_dlist_add_head(&head->dlist_head, &item->field.dlist_item);    \
 } \
-static attr_force_inline void fprefix ## _add_tail(sprefix ## _dlist_head_t *head, type *item)  \
+static attr_force_inline void fprefix ## _dlist_add_tail(sprefix ## _dlist_head_t *head, type *item)  \
 { \
     assert(head && item);   \
     type_dlist_add_tail(&head->dlist_head, &item->field.dlist_item);    \
 } \
-static attr_force_inline void fprefix ## _add_after(sprefix ## _dlist_head_t *head, type *after, type *item)    \
+static attr_force_inline void fprefix ## _dlist_add_after(sprefix ## _dlist_head_t *head, type *after, type *item)    \
 { \
     assert(head && item);   \
     type_dlist_add_after(&head->dlist_head, &after->field.dlist_item, &item->field.dlist_item);    \
 } \
-static attr_force_inline type* fprefix ## _del(sprefix ## _dlist_head_t *head, type *item)  \
+static attr_force_inline type* fprefix ## _dlist_del(sprefix ## _dlist_head_t *head, type *item)  \
 { \
     assert(head && item);   \
     dlist_item_t *it = NULL;    \
     it = type_dlist_del(&head->dlist_head, & item->field.dlist_item);  \
     return it ? item : NULL;    \
 } \
-static attr_force_inline type* fprefix ## _pop(sprefix ## _dlist_head_t *head)  \
+static attr_force_inline type* fprefix ## _dlist_pop(sprefix ## _dlist_head_t *head)  \
 { \
     assert(head);   \
     dlist_item_t *it = NULL;    \
     it = type_dlist_pop(&head->dlist_head); \
     return it ? container_of(it, type, field.dlist_item) : NULL;    \
 } \
-static attr_pure_inline type* fprefix ## _first(sprefix ## _dlist_head_t *head) \
+static attr_pure_inline type* fprefix ## _dlist_first(sprefix ## _dlist_head_t *head) \
 { \
     assert(head);   \
     dlist_item_t *it = NULL;    \
     it = type_dlist_first(&head->dlist_head);   \
     return it ? container_of(it, type, field.dlist_item) : NULL;    \
 } \
-static attr_pure_inline type* fprefix ## _next(sprefix ## _dlist_head_t *head, type *item)  \
+static attr_pure_inline type* fprefix ## _dlist_next(sprefix ## _dlist_head_t *head, type *item)  \
 { \
     assert(head);   \
     dlist_item_t *it = NULL;    \
     it = type_dlist_next(&head->dlist_head, &item->field.dlist_item);   \
     return it ? container_of(it, type, field.dlist_item) : NULL;    \
 } \
-static attr_pure_inline unsigned int fprefix ## _count(sprefix ## _dlist_head_t *head) \
+static attr_pure_inline unsigned int fprefix ## _dlist_count(sprefix ## _dlist_head_t *head) \
 { \
     return type_dlist_count(&head->dlist_head);   \
 } \

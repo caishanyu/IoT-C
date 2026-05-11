@@ -68,7 +68,7 @@ typedef struct { hash_item_t hash_item; } sprefix ## _hash_item_t;  \
 typedef struct { hash_head_t hash_head; } sprefix ## _hash_head_t;  \
 /* pre_declare_hash end */
 
-#define declare_hash(sprefix, fprefix, type, field, min_shift, max_shift, cmp_func, hash_cmp)   \
+#define declare_hash(sprefix, fprefix, type, field, min_shift, max_shift, cmp_func, hash_func)  \
 static attr_force_inline void fprefix ## _hash_init(sprefix ## _hash_head_t *head)  \
 { \
     assert(head);   \
@@ -87,7 +87,7 @@ static attr_force_inline int fprefix ## _hash_cmp(const hash_item_t *it1, const 
 static attr_pure_inline unsigned int fprefix ## _hash_hash(const hash_item_t *it)   \
 {\
     assert(it); \
-    return hash_cmp(container_of(it, type, field.hash_item));   \
+    return hash_func(container_of(it, type, field.hash_item));  \
 }\
 static attr_force_inline type* fprefix ## _hash_add(sprefix ## _hash_head_t *head, type *item)  \
 {\
